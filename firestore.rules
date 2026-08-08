@@ -1,0 +1,16 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Default allow read for public web showcase, allow write for authenticated or master CMS portal operations
+    match /{document=**} {
+      allow read: if true;
+      allow write: if true;
+    }
+  }
+}

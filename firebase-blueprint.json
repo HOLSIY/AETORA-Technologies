@@ -1,0 +1,82 @@
+{
+  "entities": {
+    "Profile": {
+      "title": "Profile",
+      "description": "Company profile, hero settings, contact details",
+      "type": "object",
+      "properties": {
+        "companyName": { "type": "string" },
+        "ownerName": { "type": "string" },
+        "ownerTitle": { "type": "string" },
+        "phone": { "type": "string" },
+        "whatsapp": { "type": "string" },
+        "linkedin": { "type": "string" },
+        "email": { "type": "string" }
+      }
+    },
+    "Project": {
+      "title": "Project",
+      "description": "Website project showcase item",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "category": { "type": "string" },
+        "description": { "type": "string" },
+        "previewImageUrl": { "type": "string" }
+      }
+    },
+    "Testimonial": {
+      "title": "Testimonial",
+      "description": "Client review testimonial",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "quote": { "type": "string" },
+        "author": { "type": "string" }
+      }
+    },
+    "Skill": {
+      "title": "Skill",
+      "description": "Technical capability item",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "percentage": { "type": "number" }
+      }
+    },
+    "MediaItem": {
+      "title": "MediaItem",
+      "description": "Media asset item",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "url": { "type": "string" },
+        "name": { "type": "string" },
+        "category": { "type": "string" }
+      }
+    }
+  },
+  "firestore": {
+    "/cms/profile": {
+      "schema": "Profile",
+      "description": "Global company profile document"
+    },
+    "/projects/{projectId}": {
+      "schema": "Project",
+      "description": "Showcase website projects"
+    },
+    "/testimonials/{testimonialId}": {
+      "schema": "Testimonial",
+      "description": "Client reviews collection"
+    },
+    "/skills/{skillId}": {
+      "schema": "Skill",
+      "description": "Technical skills list"
+    },
+    "/media/{mediaId}": {
+      "schema": "MediaItem",
+      "description": "Media manager assets collection"
+    }
+  }
+}
