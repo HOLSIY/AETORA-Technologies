@@ -7,8 +7,6 @@ import {
   saveStoredTestimonials,
   saveStoredSkills
 } from '../data/store';
-import { DEFAULT_AETORA_LOGO } from '../data/initialData';
-import senafOwnerPhoto from '../assets/senaf_owner.jpg';
 import { useMasterEdit } from './MasterEditContext';
 import {
   Lock, Plus, Trash2, Edit3, Upload, Check, X, ShieldCheck, Image as ImageIcon,
@@ -547,20 +545,27 @@ export const MasterPortalModal: React.FC<MasterPortalProps> = ({
                     <div className="bg-[#2B2723] p-4 rounded-xl border border-[#3D3833] text-center space-y-2">
                       <span className="text-[10px] uppercase font-bold text-[#9E958C] block">Logo Live Header & Footer Preview</span>
                       <div className="bg-[#121110] p-4 rounded-xl border border-[#3D3833] flex items-center justify-center min-h-[70px]">
-                        <img
-                          src={profileForm.logoUrl || DEFAULT_AETORA_LOGO}
-                          alt="Logo Preview"
-                          className="h-10 max-w-[180px] object-contain rounded-lg"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            if (target.src !== DEFAULT_AETORA_LOGO) {
-                              target.src = DEFAULT_AETORA_LOGO;
-                            }
-                          }}
-                        />
+                        {profileForm.logoUrl ? (
+                          <img
+                            src={profileForm.logoUrl}
+                            alt="Uploaded Logo Preview"
+                            className="h-10 max-w-[180px] object-contain rounded-lg"
+                            onError={(e) => {
+                              (e.target as HTMLElement).style.display = 'none';
+                            }}
+                          />
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#D49E6A] to-[#B87D4B] text-[#121110] font-serif font-black flex items-center justify-center">
+                              A
+                            </div>
+                            <span className="font-serif font-bold text-sm text-white">{profileForm.companyName || 'AETORA Technologies'}</span>
+                            <span className="text-[10px] text-[#9E958C]">(Fallback Text Active)</span>
+                          </div>
+                        )}
                       </div>
                       <p className="text-[10px] text-[#9E958C]">
-                        {profileForm.logoUrl ? 'Custom logo active! Published live across Header & Footer.' : 'Default AETORA brand logo active across Header & Footer.'}
+                        {profileForm.logoUrl ? 'Custom logo active! Saved and published live across Header & Footer.' : 'No custom logo uploaded. Standard text title fallback active.'}
                       </p>
                     </div>
                   </div>
@@ -625,17 +630,20 @@ export const MasterPortalModal: React.FC<MasterPortalProps> = ({
                     <div className="bg-[#2B2723] p-4 rounded-xl border border-[#3D3833] text-center space-y-2">
                       <span className="text-[10px] uppercase font-bold text-[#9E958C] block">CEO Photo Live Preview</span>
                       <div className="bg-[#121110] p-3 rounded-xl border border-[#3D3833] flex items-center justify-center min-h-[90px]">
-                        <img
-                          src={profileForm.profilePhotoUrl || senafOwnerPhoto}
-                          alt="CEO Photo Preview"
-                          className="w-20 h-20 object-cover rounded-full border-2 border-[#D49E6A]/50 shadow-md"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            if (target.src !== senafOwnerPhoto) {
-                              target.src = senafOwnerPhoto;
-                            }
-                          }}
-                        />
+                        {profileForm.profilePhotoUrl ? (
+                          <img
+                            src={profileForm.profilePhotoUrl}
+                            alt="CEO Photo Preview"
+                            className="w-20 h-20 object-cover rounded-full border-2 border-[#D49E6A]/50 shadow-md"
+                            onError={(e) => {
+                              (e.target as HTMLElement).style.display = 'none';
+                            }}
+                          />
+                        ) : (
+                          <div className="w-16 h-16 rounded-full bg-[#3D3833] flex items-center justify-center text-[#9E958C]">
+                            <User className="w-8 h-8" />
+                          </div>
+                        )}
                       </div>
                       <p className="text-[10px] text-[#9E958C]">
                         CEO Photo is published live across the Hero Section badge, About Section founder card, and Contact Modal.

@@ -3,7 +3,6 @@ import { DeveloperProfile, WebsiteProject } from '../types';
 import { ArrowRight, Eye, Send, Building2, Sliders, Camera, Sparkles, Box } from 'lucide-react';
 import { useMasterEdit, EditableText, EditableImage } from './MasterEditContext';
 import { Hero3DBackground } from './Hero3DBackground';
-import senafOwnerPhoto from '../assets/senaf_owner.jpg';
 
 interface HeroSectionProps {
   profile: DeveloperProfile;
@@ -358,7 +357,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 : 'from-[#D49E6A] via-[#8F643A] to-[#121110]'
             }`}>
               <EditableImage
-                src={profile.profilePhotoUrl || senafOwnerPhoto}
+                src={profile.profilePhotoUrl}
                 alt={`${profile.ownerName} - Founder & CEO`}
                 onSave={(newUrl) => onUpdateProfile({ profilePhotoUrl: newUrl })}
                 imageTitle="Founder Photo"
@@ -366,14 +365,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 className="w-56 sm:w-64 h-72 sm:h-80 rounded-b-full rounded-t-full overflow-hidden absolute bottom-0 z-10 shadow-2xl"
               >
                 <img
-                  src={profile.profilePhotoUrl || senafOwnerPhoto}
+                  src={profile.profilePhotoUrl}
                   alt={profile.ownerName}
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    if (target.src !== senafOwnerPhoto) {
-                      target.src = senafOwnerPhoto;
-                    }
-                  }}
                   className="w-full h-full object-cover filter contrast-105"
                 />
               </EditableImage>

@@ -2,7 +2,6 @@ import React from 'react';
 import { DeveloperProfile } from '../types';
 import { Phone, Mail, MessageSquare, Linkedin, X } from 'lucide-react';
 import { useMasterEdit } from './MasterEditContext';
-import senafOwnerPhoto from '../assets/senaf_owner.jpg';
 
 interface ContactModalProps {
   profile: DeveloperProfile;
@@ -46,14 +45,8 @@ export const ContactModal: React.FC<ContactModalProps> = ({
         <div className="text-center space-y-3 pt-2">
           <div className="relative w-24 h-24 mx-auto rounded-full overflow-hidden border-4 border-[#B87D4B] shadow-xl bg-[#111827] flex items-center justify-center">
             <img
-              src={profile.profilePhotoUrl || senafOwnerPhoto}
+              src={profile.profilePhotoUrl}
               alt={profile.ownerName || 'Senaf Wondimmu'}
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                if (target.src !== senafOwnerPhoto) {
-                  target.src = senafOwnerPhoto;
-                }
-              }}
               className="w-full h-full object-cover"
             />
           </div>

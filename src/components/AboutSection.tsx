@@ -2,7 +2,6 @@ import React from 'react';
 import { DeveloperProfile, SkillItem } from '../types';
 import { Shield, Zap, Lock, Globe, CheckCircle2, Cpu, Layers } from 'lucide-react';
 import { useMasterEdit, EditableText } from './MasterEditContext';
-import senafOwnerPhoto from '../assets/senaf_owner.jpg';
 
 interface AboutSectionProps {
   profile: DeveloperProfile;
@@ -92,17 +91,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ profile, skills, onU
             <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-[#B87D4B]">
-                  <img
-                    src={profile.profilePhotoUrl || senafOwnerPhoto}
-                    alt={profile.ownerName || "Senaf Wondimmu"}
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      if (target.src !== senafOwnerPhoto) {
-                        target.src = senafOwnerPhoto;
-                      }
-                    }}
-                    className="w-full h-full object-cover"
-                  />
+                  <img src={profile.profilePhotoUrl} alt="Senaf Wondimmu" className="w-full h-full object-cover" />
                 </div>
                 <div>
                   <span className="text-[10px] uppercase tracking-widest text-[#B87D4B] font-bold block">FOUNDER & CEO</span>
