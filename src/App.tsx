@@ -33,14 +33,21 @@ export function AppContent() {
   // Store scroll position before navigating into project detail
   const savedScrollY = useRef<number>(0);
 
-  // Subscribe to live CMS store changes across tabs/windows
+  // Subscribe to live CMS store changes across tabs/windows & sync from persistent cloud
   useEffect(() => {
-    // Sync persistent global site settings (logo & CEO image) from cloud database
-    syncCloudSiteSettings().then((updated) => {
-      if (updated) {
-        setProfile(updated);
-      }
-    });
+    const doSync = () => {
+      syncCloudSiteSettings().then((updated) => {
+        if (updated) {
+          setProfile(updated);
+        }
+      });
+    };
+
+    doSync();
+
+    const intervalId = setInterval(doSync, 15000);
+    const handleFocus = () => doSync();
+    window.addEventListener('focus', handleFocus);
 
     const syncStore = () => {
       setProjects(getStoredProjects());
@@ -50,7 +57,11 @@ export function AppContent() {
     };
 
     const unsubscribe = subscribeCMSUpdates(syncStore);
-    return () => unsubscribe();
+    return () => {
+      clearInterval(intervalId);
+      window.removeEventListener('focus', handleFocus);
+      unsubscribe();
+    };
   }, []);
 
   // Handle route state & browser back button

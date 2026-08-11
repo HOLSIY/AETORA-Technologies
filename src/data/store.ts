@@ -28,11 +28,21 @@ export async function syncCloudSiteSettings(): Promise<DeveloperProfile | null> 
         changed = true;
       }
 
+      if (cloudSettings.company_name && cloudSettings.company_name.trim() !== '' && cloudSettings.company_name !== current.companyName) {
+        current.companyName = cloudSettings.company_name;
+        changed = true;
+      }
+
+      if (cloudSettings.owner_name && cloudSettings.owner_name.trim() !== '' && cloudSettings.owner_name !== current.ownerName) {
+        current.ownerName = cloudSettings.owner_name;
+        changed = true;
+      }
+
       if (changed) {
         saveStoredProfile(current);
         notifyCMSUpdate();
-        return current;
       }
+      return current;
     }
   } catch (e) {
     console.warn('Could not sync cloud site settings:', e);

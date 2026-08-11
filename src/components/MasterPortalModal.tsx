@@ -109,7 +109,7 @@ export const MasterPortalModal: React.FC<MasterPortalProps> = ({
     if (!file) return;
 
     setIsUploadingCloud(true);
-    setCloudStatusMsg('Uploading logo to persistent Supabase Cloud Storage...');
+    setCloudStatusMsg('Uploading logo to persistent Cloud Storage & Database...');
 
     try {
       const result = await uploadAndSaveCloudImage(file, 'logo');
@@ -120,11 +120,9 @@ export const MasterPortalModal: React.FC<MasterPortalProps> = ({
         onUpdateProfile(updated);
         setCloudStatusMsg('✅ Logo saved persistently in Cloud Storage & Database (site_settings)!');
       } else {
-        handleFileUpload(e, 'logo');
-        setCloudStatusMsg('⚠️ Local fallback saved. ' + (result.error || 'Configure Supabase credentials for cloud persistence across devices.'));
+        setCloudStatusMsg('⚠️ Upload notice: ' + (result.error || 'Could not save logo to cloud.'));
       }
     } catch (err: any) {
-      handleFileUpload(e, 'logo');
       setCloudStatusMsg('⚠️ Upload notice: ' + err.message);
     } finally {
       setIsUploadingCloud(false);
@@ -136,7 +134,7 @@ export const MasterPortalModal: React.FC<MasterPortalProps> = ({
     if (!file) return;
 
     setIsUploadingCloud(true);
-    setCloudStatusMsg('Uploading CEO image to persistent Supabase Cloud Storage...');
+    setCloudStatusMsg('Uploading CEO photo to persistent Cloud Storage & Database...');
 
     try {
       const result = await uploadAndSaveCloudImage(file, 'ceo');
@@ -145,13 +143,11 @@ export const MasterPortalModal: React.FC<MasterPortalProps> = ({
         setProfileForm(updated);
         saveStoredProfile(updated);
         onUpdateProfile(updated);
-        setCloudStatusMsg('✅ CEO Photo saved persistently in Cloud Storage & Database (site_settings)!');
+        setCloudStatusMsg('✅ Founder & CEO Photo saved persistently in Cloud Storage & Database (site_settings)!');
       } else {
-        handleFileUpload(e, 'profile');
-        setCloudStatusMsg('⚠️ Local fallback saved. ' + (result.error || 'Configure Supabase credentials for cloud persistence across devices.'));
+        setCloudStatusMsg('⚠️ Upload notice: ' + (result.error || 'Could not save CEO photo to cloud.'));
       }
     } catch (err: any) {
-      handleFileUpload(e, 'profile');
       setCloudStatusMsg('⚠️ Upload notice: ' + err.message);
     } finally {
       setIsUploadingCloud(false);
@@ -337,10 +333,28 @@ export const MasterPortalModal: React.FC<MasterPortalProps> = ({
   };
 
   // Profile / Company Save
-  const handleSaveCompany = () => {
+  const handleSaveCompany = async () => {
     saveStoredProfile(profileForm);
     onUpdateProfile(profileForm);
-    alert('AETORA Technologies company details saved and updated live!');
+    setCloudStatusMsg('Synchronizing company details and site settings with cloud database...');
+    const result = await updateCloudSiteSettings({
+      logo_url: profileForm.logoUrl || '',
+      ceo_image_url: profileForm.profilePhotoUrl || '',
+      company_name: profileForm.companyName,
+      owner_name: profileForm.ownerName,
+      owner_title: profileForm.ownerTitle,
+      phone: profileForm.phone,
+      email: profileForm.email,
+      whatsapp: profileForm.whatsapp,
+      linkedin: profileForm.linkedin,
+    });
+    if (result.success) {
+      setCloudStatusMsg('✅ Company details and settings saved globally in Cloud Database!');
+      alert('AETORA Technologies company details saved and synchronized globally across all devices!');
+    } else {
+      setCloudStatusMsg('⚠️ Company details saved locally.');
+      alert('AETORA Technologies company details saved locally!');
+    }
   };
 
   // Save Project (Add/Edit)

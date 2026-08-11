@@ -1,6 +1,6 @@
 import React from 'react';
 import { DeveloperProfile } from '../types';
-import { Phone, Mail, MessageSquare, Linkedin, X } from 'lucide-react';
+import { Phone, Mail, MessageSquare, Linkedin, Globe, X } from 'lucide-react';
 import { useMasterEdit } from './MasterEditContext';
 
 interface ContactModalProps {
@@ -166,6 +166,30 @@ export const ContactModal: React.FC<ContactModalProps> = ({
             </div>
             <span className="bg-blue-700 text-white font-bold text-[10px] uppercase px-3 py-1.5 rounded-full">
               Connect
+            </span>
+          </a>
+
+          <a
+            href="https://senaf-wondimmu.vercel.app/"
+            target="_blank"
+            rel="noreferrer"
+            className={`flex items-center justify-between p-3.5 rounded-2xl border shadow-sm transition-all group ${
+              isLight
+                ? 'bg-white border-[#E5E7EB] hover:border-[#B87D4B]'
+                : 'bg-[#25221E] border-[#3D3833] hover:border-[#D49E6A]'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 bg-purple-50 text-purple-700 rounded-xl group-hover:scale-110 transition-transform">
+                <Globe className="w-4 h-4" />
+              </div>
+              <div>
+                <span className={`text-[10px] uppercase block ${isLight ? 'text-[#6B7280]' : 'text-[#A69D92]'}`}>PORTFOLIO</span>
+                <span className={`font-bold ${isLight ? 'text-[#111827]' : 'text-white'}`}>Senaf Wondimmu — Personal Portfolio</span>
+              </div>
+            </div>
+            <span className="bg-purple-700 text-white font-bold text-[10px] uppercase px-3 py-1.5 rounded-full whitespace-nowrap">
+              VIEW PORTFOLIO
             </span>
           </a>
         </div>
