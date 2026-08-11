@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { PhoneCall, Sun, Moon, Menu, X } from 'lucide-react';
 import { useMasterEdit, EditableText } from './MasterEditContext';
 import { DeveloperProfile } from '../types';
+import { DEFAULT_AETORA_LOGO } from '../data/initialData';
 
 interface HeaderProps {
   profile?: DeveloperProfile;
@@ -169,20 +170,17 @@ export const Header: React.FC<HeaderProps> = ({
           className="flex items-center gap-3 group cursor-pointer focus:outline-none"
           title="Back to Top / Hero Section"
         >
-          {profile?.logoUrl ? (
-            <img
-              src={profile.logoUrl}
-              alt={profile?.companyName || 'AETORA Technologies'}
-              className="h-10 max-w-[160px] object-contain rounded-xl shadow-md group-hover:scale-105 transition-transform"
-              onError={(e) => {
-                (e.target as HTMLElement).style.display = 'none';
-              }}
-            />
-          ) : (
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#D49E6A] to-[#B87D4B] text-[#121110] font-serif font-black text-xl flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
-              A
-            </div>
-          )}
+          <img
+            src={profile?.logoUrl || DEFAULT_AETORA_LOGO}
+            alt={profile?.companyName || 'AETORA Technologies'}
+            className="h-10 max-w-[170px] object-contain rounded-xl shadow-md group-hover:scale-105 transition-transform"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              if (target.src !== DEFAULT_AETORA_LOGO) {
+                target.src = DEFAULT_AETORA_LOGO;
+              }
+            }}
+          />
           <div>
             <span
               className={`font-serif text-lg font-bold tracking-tight block transition-colors ${

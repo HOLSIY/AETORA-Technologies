@@ -1,9 +1,11 @@
 import { DeveloperProfile, WebsiteProject, Testimonial, SkillItem, MediaItem, ServiceDetailItem, DesignPrincipleItem } from '../types';
 import senafOwnerPhoto from '../assets/senaf_owner.jpg';
 
+export const DEFAULT_AETORA_LOGO = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 100" width="400" height="100"><defs><linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%23F3E5AB"/><stop offset="50%" stop-color="%23D49E6A"/><stop offset="100%" stop-color="%23B87D4B"/></linearGradient></defs><rect width="80" height="80" x="10" y="10" rx="20" fill="%231C1A17" stroke="url(%23gold)" stroke-width="3"/><path d="M50 25 L30 75 L42 75 L47 62 L53 62 L58 75 L70 75 Z M50 38 L48 53 L52 53 Z" fill="url(%23gold)"/><text x="105" y="52" font-family="Georgia, serif" font-size="32" font-weight="bold" fill="%23D49E6A" letter-spacing="2">AETORA</text><text x="105" y="75" font-family="sans-serif" font-size="12" font-weight="700" fill="%239E958C" letter-spacing="3">TECHNOLOGIES</text></svg>';
+
 export const INITIAL_PROFILE: DeveloperProfile = {
   companyName: 'AETORA Technologies',
-  logoUrl: '',
+  logoUrl: DEFAULT_AETORA_LOGO,
   ownerName: 'Senaf Wondimmu',
   ownerTitle: 'Founder & CEO',
   title: 'Founder & CEO, Full-Stack Software Engineer, UI/UX Designer',
@@ -16,7 +18,7 @@ export const INITIAL_PROFILE: DeveloperProfile = {
   aboutVision: 'To lead the software industry in delivering pixel-perfect design, bulletproof security, and seamless full-stack web architecture.',
   aboutText: 'AETORA Technologies is a premier software development firm founded by Senaf Wondimmu. We specialize in end-to-end digital solutions—from custom restaurant portals and healthcare management systems to e-commerce engines, admin dashboards, and high-conversion web platforms.',
   yearsOfExperience: 8,
-  profilePhotoUrl: '/senaf_owner.jpg',
+  profilePhotoUrl: senafOwnerPhoto,
   email: 'senafwondimu@gmail.com',
   phone: '+251 97 493 8979',
   whatsapp: '+251 97 493 8979',

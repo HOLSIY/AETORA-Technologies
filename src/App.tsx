@@ -9,6 +9,7 @@ import {
   subscribeCMSUpdates
 } from './data/store';
 import { MasterEditProvider, EditableText } from './components/MasterEditContext';
+import { DEFAULT_AETORA_LOGO } from './data/initialData';
 import { Header } from './components/Header';
 import { HeroSection } from './components/HeroSection';
 import { AboutSection } from './components/AboutSection';
@@ -215,16 +216,17 @@ export function AppContent() {
           <footer className="bg-[#0C0B0A] text-[#8C857B] py-12 px-6 text-xs font-sans border-t border-[#262320]">
             <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
               <div className="flex items-center gap-3">
-                {profile.logoUrl && (
-                  <img
-                    src={profile.logoUrl}
-                    alt={profile.companyName || 'AETORA Technologies'}
-                    className="h-9 max-w-[140px] object-contain rounded-lg shrink-0"
-                    onError={(e) => {
-                      (e.target as HTMLElement).style.display = 'none';
-                    }}
-                  />
-                )}
+                <img
+                  src={profile.logoUrl || DEFAULT_AETORA_LOGO}
+                  alt={profile.companyName || 'AETORA Technologies'}
+                  className="h-9 max-w-[150px] object-contain rounded-lg shrink-0"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    if (target.src !== DEFAULT_AETORA_LOGO) {
+                      target.src = DEFAULT_AETORA_LOGO;
+                    }
+                  }}
+                />
                 <div className="space-y-1 text-center md:text-left">
                   <h3 className="font-serif font-bold text-base text-[#FAF7F2]">
                     <EditableText

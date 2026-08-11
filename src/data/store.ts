@@ -15,9 +15,18 @@ export function getStoredProfile(): DeveloperProfile {
     const raw = localStorage.getItem(PROFILE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      // Auto-migrate if stored profile had old default girl photo
-      if (!parsed.profilePhotoUrl || parsed.profilePhotoUrl.includes('photo-1534528741775-53994a69daeb')) {
+      // Auto-migrate if stored profile photo is missing, unbundled string or old default
+      if (
+        !parsed.profilePhotoUrl ||
+        parsed.profilePhotoUrl === '/senaf_owner.jpg' ||
+        parsed.profilePhotoUrl.includes('photo-1534528741775-53994a69daeb') ||
+        parsed.profilePhotoUrl.startsWith('blob:')
+      ) {
         parsed.profilePhotoUrl = INITIAL_PROFILE.profilePhotoUrl;
+      }
+      // Auto-migrate if logoUrl is missing or empty
+      if (!parsed.logoUrl || parsed.logoUrl.trim() === '') {
+        parsed.logoUrl = INITIAL_PROFILE.logoUrl;
       }
       return { ...INITIAL_PROFILE, ...parsed };
     }
