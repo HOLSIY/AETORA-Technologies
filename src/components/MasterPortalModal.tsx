@@ -7,6 +7,14 @@ import {
   saveStoredTestimonials,
   saveStoredSkills
 } from '../data/store';
+import {
+  isSupabaseConfigured,
+  uploadAndSaveCloudImage,
+  updateCloudSiteSettings,
+  fetchCloudSiteSettings,
+  getCustomSupabaseCredentials,
+  saveCustomSupabaseCredentials
+} from '../lib/siteSettings';
 import { useMasterEdit } from './MasterEditContext';
 import {
   Lock, Plus, Trash2, Edit3, Upload, Check, X, ShieldCheck, Image as ImageIcon,
@@ -84,9 +92,120 @@ export const MasterPortalModal: React.FC<MasterPortalProps> = ({
   const [newServiceInput, setNewServiceInput] = useState('');
   const [uploadPreview, setUploadPreview] = useState<string | null>(null);
 
+  // Cloud Storage & Database Sync State
+  const [isUploadingCloud, setIsUploadingCloud] = useState(false);
+  const [cloudStatusMsg, setCloudStatusMsg] = useState<string | null>(null);
+  const [supabaseCreds, setSupabaseCreds] = useState(() => getCustomSupabaseCredentials());
+  const [showCloudConfig, setShowCloudConfig] = useState(false);
+  const [showSqlSetup, setShowSqlSetup] = useState(false);
+
   useEffect(() => {
     setProfileForm(profile);
   }, [profile]);
+
+  // Cloud Image Upload Handlers for Logo & CEO Image
+  const handleCloudLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingCloud(true);
+    setCloudStatusMsg('Uploading logo to persistent Supabase Cloud Storage...');
+
+    try {
+      const result = await uploadAndSaveCloudImage(file, 'logo');
+      if (result.success && result.url) {
+        const updated = { ...profileForm, logoUrl: result.url };
+        setProfileForm(updated);
+        saveStoredProfile(updated);
+        onUpdateProfile(updated);
+        setCloudStatusMsg('✅ Logo saved persistently in Cloud Storage & Database (site_settings)!');
+      } else {
+        handleFileUpload(e, 'logo');
+        setCloudStatusMsg('⚠️ Local fallback saved. ' + (result.error || 'Configure Supabase credentials for cloud persistence across devices.'));
+      }
+    } catch (err: any) {
+      handleFileUpload(e, 'logo');
+      setCloudStatusMsg('⚠️ Upload notice: ' + err.message);
+    } finally {
+      setIsUploadingCloud(false);
+    }
+  };
+
+  const handleCloudCeoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingCloud(true);
+    setCloudStatusMsg('Uploading CEO image to persistent Supabase Cloud Storage...');
+
+    try {
+      const result = await uploadAndSaveCloudImage(file, 'ceo');
+      if (result.success && result.url) {
+        const updated = { ...profileForm, profilePhotoUrl: result.url };
+        setProfileForm(updated);
+        saveStoredProfile(updated);
+        onUpdateProfile(updated);
+        setCloudStatusMsg('✅ CEO Photo saved persistently in Cloud Storage & Database (site_settings)!');
+      } else {
+        handleFileUpload(e, 'profile');
+        setCloudStatusMsg('⚠️ Local fallback saved. ' + (result.error || 'Configure Supabase credentials for cloud persistence across devices.'));
+      }
+    } catch (err: any) {
+      handleFileUpload(e, 'profile');
+      setCloudStatusMsg('⚠️ Upload notice: ' + err.message);
+    } finally {
+      setIsUploadingCloud(false);
+    }
+  };
+
+  const handleLogoUrlChange = (url: string) => {
+    const updated = { ...profileForm, logoUrl: url };
+    setProfileForm(updated);
+    saveStoredProfile(updated);
+    onUpdateProfile(updated);
+    if (url.trim()) {
+      updateCloudSiteSettings({ logo_url: url });
+    }
+  };
+
+  const handleCeoUrlChange = (url: string) => {
+    const updated = { ...profileForm, profilePhotoUrl: url };
+    setProfileForm(updated);
+    saveStoredProfile(updated);
+    onUpdateProfile(updated);
+    if (url.trim()) {
+      updateCloudSiteSettings({ ceo_image_url: url });
+    }
+  };
+
+  const handleSyncCloudSettings = async () => {
+    setCloudStatusMsg('Fetching latest site settings from Supabase Cloud DB...');
+    const cloudData = await fetchCloudSiteSettings();
+    if (cloudData) {
+      const updated = { ...profileForm };
+      let updatedCount = 0;
+      if (cloudData.logo_url) {
+        updated.logoUrl = cloudData.logo_url;
+        updatedCount++;
+      }
+      if (cloudData.ceo_image_url) {
+        updated.profilePhotoUrl = cloudData.ceo_image_url;
+        updatedCount++;
+      }
+      setProfileForm(updated);
+      saveStoredProfile(updated);
+      onUpdateProfile(updated);
+      setCloudStatusMsg(`✅ Synchronized ${updatedCount} setting(s) from Cloud DB!`);
+    } else {
+      setCloudStatusMsg('⚠️ Could not fetch settings. Check Supabase connection & site_settings table.');
+    }
+  };
+
+  const handleSaveSupabaseCredentials = () => {
+    saveCustomSupabaseCredentials(supabaseCreds.url, supabaseCreds.anonKey);
+    setCloudStatusMsg('✅ Supabase configuration saved! Testing database connection...');
+    handleSyncCloudSettings();
+  };
 
   if (!isOpen) return null;
 
@@ -481,14 +600,135 @@ export const MasterPortalModal: React.FC<MasterPortalProps> = ({
             {/* TAB 1: Company & Owner Profile CMS */}
             {activeTab === 'company' && (
               <div className="bg-[#2B2723] p-6 rounded-3xl border border-[#3D3833] space-y-6 text-xs">
-                <div className="flex justify-between items-center border-b border-[#3D3833] pb-4">
-                  <h3 className="font-serif text-lg font-bold text-white">Company Identity & Hero Section Editor</h3>
-                  <button
-                    onClick={handleSaveCompany}
-                    className="bg-[#D49E6A] text-[#121110] font-bold px-5 py-2.5 rounded-xl uppercase flex items-center gap-2 shadow-lg"
-                  >
-                    <Save className="w-4 h-4" /> Save & Synchronize Live
-                  </button>
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-[#3D3833] pb-4">
+                  <div>
+                    <h3 className="font-serif text-lg font-bold text-white flex items-center gap-2">
+                      Company Identity & Global Image Storage
+                    </h3>
+                    <p className="text-[#9E958C] text-[11px] mt-0.5">
+                      Uploaded logos and founder photos are stored in Cloud Database & Storage to survive Vercel redeployments.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={handleSyncCloudSettings}
+                      className="bg-[#1C1A17] hover:bg-[#3D3833] text-[#D49E6A] font-bold px-3.5 py-2 rounded-xl uppercase flex items-center gap-1.5 border border-[#3D3833] transition-colors"
+                      title="Fetch latest saved logo and CEO photo from Cloud DB"
+                    >
+                      <RefreshCw className="w-3.5 h-3.5" /> Sync Cloud DB
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleSaveCompany}
+                      className="bg-[#D49E6A] hover:bg-[#c28e5c] text-[#121110] font-bold px-5 py-2 rounded-xl uppercase flex items-center gap-2 shadow-lg transition-colors"
+                    >
+                      <Save className="w-4 h-4" /> Save & Synchronize
+                    </button>
+                  </div>
+                </div>
+
+                {/* Persistent Cloud Database & Storage Status Banner */}
+                <div className="bg-[#1C1A17] p-4 rounded-2xl border border-[#3D3833] space-y-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex items-center gap-2.5">
+                      <div className={`w-3 h-3 rounded-full ${isSupabaseConfigured() ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
+                      <span className="font-bold text-white uppercase tracking-wider text-[11px]">
+                        Cloud Storage Status: {isSupabaseConfigured() ? 'Active (Supabase Cloud Connected)' : 'Using Environment Credentials / Local Fallback'}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setShowCloudConfig(!showCloudConfig)}
+                        className="text-[11px] font-bold text-[#D49E6A] hover:underline flex items-center gap-1 uppercase"
+                      >
+                        <KeyRound className="w-3.5 h-3.5" /> {showCloudConfig ? 'Hide Credentials' : 'Configure Supabase Keys'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowSqlSetup(!showSqlSetup)}
+                        className="text-[11px] font-bold text-[#9E958C] hover:text-white flex items-center gap-1 uppercase"
+                      >
+                        <Database className="w-3.5 h-3.5" /> Database SQL Schema
+                      </button>
+                    </div>
+                  </div>
+
+                  {cloudStatusMsg && (
+                    <p className="text-[11px] font-semibold text-[#D49E6A] bg-[#2B2723] p-2.5 rounded-xl border border-[#3D3833]">
+                      {cloudStatusMsg}
+                    </p>
+                  )}
+
+                  {/* Supabase Dynamic Configuration Panel */}
+                  {showCloudConfig && (
+                    <div className="bg-[#2B2723] p-4 rounded-xl border border-[#3D3833] space-y-3 mt-2">
+                      <span className="text-[11px] font-bold text-white uppercase block">
+                        Supabase Environment Credentials Overrides
+                      </span>
+                      <p className="text-[10px] text-[#9E958C]">
+                        Enter your Supabase URL and Anon Key below or configure <code className="text-[#D49E6A]">VITE_SUPABASE_URL</code> and <code className="text-[#D49E6A]">VITE_SUPABASE_ANON_KEY</code> in Vercel project environment settings.
+                      </p>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-[10px] font-bold text-[#9E958C] uppercase mb-1">Supabase Project URL</label>
+                          <input
+                            type="url"
+                            placeholder="https://xyz.supabase.co"
+                            value={supabaseCreds.url}
+                            onChange={(e) => setSupabaseCreds({ ...supabaseCreds, url: e.target.value })}
+                            className="w-full bg-[#1C1A17] border border-[#3D3833] rounded-xl p-2.5 text-white focus:outline-none focus:border-[#D49E6A]"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-bold text-[#9E958C] uppercase mb-1">Supabase Anon Key</label>
+                          <input
+                            type="password"
+                            placeholder="eyJhbG..."
+                            value={supabaseCreds.anonKey}
+                            onChange={(e) => setSupabaseCreds({ ...supabaseCreds, anonKey: e.target.value })}
+                            className="w-full bg-[#1C1A17] border border-[#3D3833] rounded-xl p-2.5 text-white focus:outline-none focus:border-[#D49E6A]"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="flex justify-end gap-2 pt-1">
+                        <button
+                          type="button"
+                          onClick={handleSaveSupabaseCredentials}
+                          className="bg-[#D49E6A] text-[#121110] font-bold px-4 py-2 rounded-xl uppercase text-[10px] flex items-center gap-1.5"
+                        >
+                          <Check className="w-3.5 h-3.5" /> Save Credentials & Test Sync
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* SQL Schema Assistant */}
+                  {showSqlSetup && (
+                    <div className="bg-[#121110] p-4 rounded-xl border border-[#3D3833] space-y-2 mt-2">
+                      <span className="text-[11px] font-bold text-[#D49E6A] uppercase block">
+                        Supabase Database Setup SQL (site_settings table)
+                      </span>
+                      <p className="text-[10px] text-[#9E958C]">
+                        Run this script in Supabase SQL Editor if table is not created yet:
+                      </p>
+                      <pre className="bg-[#0C0B0A] p-3 rounded-lg text-[10px] text-emerald-400 font-mono overflow-x-auto select-all">
+{`CREATE TABLE IF NOT EXISTS public.site_settings (
+  id TEXT PRIMARY KEY DEFAULT 'global',
+  logo_url TEXT,
+  ceo_image_url TEXT,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+ALTER TABLE public.site_settings ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow public read" ON public.site_settings FOR SELECT USING (true);
+CREATE POLICY "Allow public write" ON public.site_settings FOR ALL USING (true);`}
+                      </pre>
+                    </div>
+                  )}
                 </div>
 
                 {/* Brand Logo Upload Section */}
@@ -505,6 +745,7 @@ export const MasterPortalModal: React.FC<MasterPortalProps> = ({
                           setProfileForm(updated);
                           saveStoredProfile(updated);
                           onUpdateProfile(updated);
+                          updateCloudSiteSettings({ logo_url: '' });
                         }}
                         className="text-[11px] font-bold text-rose-400 hover:text-rose-300 flex items-center gap-1 uppercase"
                       >
@@ -517,25 +758,28 @@ export const MasterPortalModal: React.FC<MasterPortalProps> = ({
                     {/* Upload Controls */}
                     <div className="space-y-3">
                       <div>
-                        <label className="block text-[#9E958C] font-bold mb-1 uppercase text-[11px]">Upload Logo Image File</label>
-                        <label className="w-full bg-[#2B2723] hover:bg-[#3D3833] border border-[#3D3833] text-white font-bold p-3 rounded-xl uppercase cursor-pointer flex items-center justify-center gap-2 transition-colors">
-                          <Upload className="w-4 h-4 text-[#D49E6A]" /> Select Image From Local Device
+                        <label className="block text-[#9E958C] font-bold mb-1 uppercase text-[11px]">
+                          Upload Logo File (Saved to Cloud Storage & DB)
+                        </label>
+                        <label className={`w-full bg-[#2B2723] hover:bg-[#3D3833] border border-[#3D3833] text-white font-bold p-3 rounded-xl uppercase cursor-pointer flex items-center justify-center gap-2 transition-colors ${isUploadingCloud ? 'opacity-50 cursor-wait' : ''}`}>
+                          <Upload className="w-4 h-4 text-[#D49E6A]" /> {isUploadingCloud ? 'Uploading to Cloud...' : 'Select Logo Image From Device'}
                           <input
                             type="file"
                             accept="image/*"
-                            onChange={handleLogoFileUpload}
+                            disabled={isUploadingCloud}
+                            onChange={handleCloudLogoUpload}
                             className="hidden"
                           />
                         </label>
                       </div>
 
                       <div>
-                        <label className="block text-[#9E958C] font-bold mb-1 uppercase text-[11px]">Or Enter Logo Image Web URL</label>
+                        <label className="block text-[#9E958C] font-bold mb-1 uppercase text-[11px]">Or Enter Persistent Logo Image URL</label>
                         <input
                           type="url"
-                          placeholder="https://images.unsplash.com/..."
+                          placeholder="https://..."
                           value={profileForm.logoUrl || ''}
-                          onChange={(e) => setProfileForm({ ...profileForm, logoUrl: e.target.value })}
+                          onChange={(e) => handleLogoUrlChange(e.target.value)}
                           className="w-full bg-[#2B2723] border border-[#3D3833] rounded-xl p-3 text-white focus:outline-none focus:border-[#D49E6A]"
                         />
                       </div>
@@ -565,7 +809,7 @@ export const MasterPortalModal: React.FC<MasterPortalProps> = ({
                         )}
                       </div>
                       <p className="text-[10px] text-[#9E958C]">
-                        {profileForm.logoUrl ? 'Custom logo active! Saved and published live across Header & Footer.' : 'No custom logo uploaded. Standard text title fallback active.'}
+                        {profileForm.logoUrl ? 'Custom logo active! Saved to Cloud DB and published live across Header & Footer.' : 'No custom logo uploaded. Standard text title fallback active.'}
                       </p>
                     </div>
                   </div>
@@ -585,6 +829,7 @@ export const MasterPortalModal: React.FC<MasterPortalProps> = ({
                           setProfileForm(updated);
                           saveStoredProfile(updated);
                           onUpdateProfile(updated);
+                          updateCloudSiteSettings({ ceo_image_url: '' });
                         }}
                         className="text-[11px] font-bold text-rose-400 hover:text-rose-300 flex items-center gap-1 uppercase"
                       >
@@ -597,30 +842,28 @@ export const MasterPortalModal: React.FC<MasterPortalProps> = ({
                     {/* Upload Controls */}
                     <div className="space-y-3">
                       <div>
-                        <label className="block text-[#9E958C] font-bold mb-1 uppercase text-[11px]">Upload CEO / Founder Image File</label>
-                        <label className="w-full bg-[#2B2723] hover:bg-[#3D3833] border border-[#3D3833] text-white font-bold p-3 rounded-xl uppercase cursor-pointer flex items-center justify-center gap-2 transition-colors">
-                          <Upload className="w-4 h-4 text-[#D49E6A]" /> Select Image From Local Device
+                        <label className="block text-[#9E958C] font-bold mb-1 uppercase text-[11px]">
+                          Upload CEO / Founder File (Saved to Cloud Storage & DB)
+                        </label>
+                        <label className={`w-full bg-[#2B2723] hover:bg-[#3D3833] border border-[#3D3833] text-white font-bold p-3 rounded-xl uppercase cursor-pointer flex items-center justify-center gap-2 transition-colors ${isUploadingCloud ? 'opacity-50 cursor-wait' : ''}`}>
+                          <Upload className="w-4 h-4 text-[#D49E6A]" /> {isUploadingCloud ? 'Uploading to Cloud...' : 'Select CEO Photo From Device'}
                           <input
                             type="file"
                             accept="image/*"
-                            onChange={(e) => handleFileUpload(e, 'profile')}
+                            disabled={isUploadingCloud}
+                            onChange={handleCloudCeoUpload}
                             className="hidden"
                           />
                         </label>
                       </div>
 
                       <div>
-                        <label className="block text-[#9E958C] font-bold mb-1 uppercase text-[11px]">Or Enter CEO Image Web URL</label>
+                        <label className="block text-[#9E958C] font-bold mb-1 uppercase text-[11px]">Or Enter Persistent CEO Image URL</label>
                         <input
                           type="url"
                           placeholder="https://..."
                           value={profileForm.profilePhotoUrl || ''}
-                          onChange={(e) => {
-                            const updated = { ...profileForm, profilePhotoUrl: e.target.value };
-                            setProfileForm(updated);
-                            saveStoredProfile(updated);
-                            onUpdateProfile(updated);
-                          }}
+                          onChange={(e) => handleCeoUrlChange(e.target.value)}
                           className="w-full bg-[#2B2723] border border-[#3D3833] rounded-xl p-3 text-white focus:outline-none focus:border-[#D49E6A]"
                         />
                       </div>

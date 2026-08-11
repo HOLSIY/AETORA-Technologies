@@ -1,5 +1,6 @@
 import { DeveloperProfile, WebsiteProject, Testimonial, SkillItem, MediaItem } from '../types';
 import { INITIAL_PROFILE, INITIAL_PROJECTS, INITIAL_TESTIMONIALS, INITIAL_SKILLS, INITIAL_MEDIA } from './initialData';
+import { fetchCloudSiteSettings } from '../lib/siteSettings';
 
 const PROFILE_KEY = 'aetora_profile_v2';
 const PROJECTS_KEY = 'aetora_projects_v6';
@@ -8,6 +9,36 @@ const SKILLS_KEY = 'aetora_skills_v1';
 const MEDIA_KEY = 'aetora_media_v1';
 
 const BROADCAST_CHANNEL_NAME = 'aetora_cms_sync_channel';
+
+// Synchronize global cloud settings (logo and CEO image) on load
+export async function syncCloudSiteSettings(): Promise<DeveloperProfile | null> {
+  try {
+    const cloudSettings = await fetchCloudSiteSettings();
+    if (cloudSettings) {
+      const current = getStoredProfile();
+      let changed = false;
+
+      if (cloudSettings.logo_url && cloudSettings.logo_url.trim() !== '' && cloudSettings.logo_url !== current.logoUrl) {
+        current.logoUrl = cloudSettings.logo_url;
+        changed = true;
+      }
+
+      if (cloudSettings.ceo_image_url && cloudSettings.ceo_image_url.trim() !== '' && cloudSettings.ceo_image_url !== current.profilePhotoUrl) {
+        current.profilePhotoUrl = cloudSettings.ceo_image_url;
+        changed = true;
+      }
+
+      if (changed) {
+        saveStoredProfile(current);
+        notifyCMSUpdate();
+        return current;
+      }
+    }
+  } catch (e) {
+    console.warn('Could not sync cloud site settings:', e);
+  }
+  return null;
+}
 
 // Get profile with fallback
 export function getStoredProfile(): DeveloperProfile {

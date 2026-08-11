@@ -6,7 +6,8 @@ import {
   getStoredTestimonials,
   getStoredSkills,
   saveStoredProfile,
-  subscribeCMSUpdates
+  subscribeCMSUpdates,
+  syncCloudSiteSettings
 } from './data/store';
 import { MasterEditProvider, EditableText } from './components/MasterEditContext';
 import { Header } from './components/Header';
@@ -34,6 +35,13 @@ export function AppContent() {
 
   // Subscribe to live CMS store changes across tabs/windows
   useEffect(() => {
+    // Sync persistent global site settings (logo & CEO image) from cloud database
+    syncCloudSiteSettings().then((updated) => {
+      if (updated) {
+        setProfile(updated);
+      }
+    });
+
     const syncStore = () => {
       setProjects(getStoredProjects());
       setProfile(getStoredProfile());
