@@ -21,17 +21,21 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onSelect, onC
     }`}>
       
       {/* Top Image Preview & Badges */}
-      <div className="relative aspect-[16/10] min-h-[200px] overflow-hidden bg-slate-800 cursor-pointer" onClick={() => onSelect(project)}>
+      <div className="relative aspect-[16/10] min-h-[200px] overflow-hidden bg-gradient-to-br from-[#2B2723] to-[#1C1A17] cursor-pointer" onClick={() => onSelect(project)}>
         <img
-          src={project.previewImageUrl || 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&q=80&w=1200'}
+          src={project.previewImageUrl || 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&q=80&w=1200'}
           alt={project.title}
           onError={(e) => {
-            (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&q=80&w=1200';
+            const target = e.target as HTMLImageElement;
+            if (!target.dataset.failed) {
+              target.dataset.failed = 'true';
+              target.src = 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&q=80&w=1200';
+            }
           }}
           className="w-full h-full min-h-[200px] object-cover group-hover:scale-105 transition-transform duration-500 block relative z-0"
         />
 
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80 group-hover:opacity-40 transition-opacity pointer-events-none z-1"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80 group-hover:opacity-40 transition-opacity pointer-events-none z-[1]"></div>
 
         {/* Badges Container */}
         <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 z-10">

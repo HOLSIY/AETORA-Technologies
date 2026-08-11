@@ -106,12 +106,12 @@ export const MasterPortalModal: React.FC<MasterPortalProps> = ({
   };
 
   // Image Upload Handler with Canvas Compression
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, target: 'project' | 'profile' | 'hero' | 'preview_center') => {
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, target: 'project' | 'profile' | 'hero' | 'preview_center' | 'logo') => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const maxDimension = target === 'profile' ? 400 : 1200;
-    const quality = 0.75;
+    const maxDimension = target === 'profile' || target === 'logo' ? 500 : 1200;
+    const quality = 0.8;
 
     const reader = new FileReader();
     reader.onerror = () => alert('Failed to read uploaded image file.');
@@ -173,18 +173,7 @@ export const MasterPortalModal: React.FC<MasterPortalProps> = ({
   };
 
   const handleLogoFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64 = reader.result as string;
-        const updated = { ...profileForm, logoUrl: base64 };
-        setProfileForm(updated);
-        saveStoredProfile(updated);
-        onUpdateProfile(updated);
-      };
-      reader.readAsDataURL(file);
-    }
+    handleFileUpload(e, 'logo');
   };
 
   // Default Section Order
@@ -577,6 +566,87 @@ export const MasterPortalModal: React.FC<MasterPortalProps> = ({
                       </div>
                       <p className="text-[10px] text-[#9E958C]">
                         {profileForm.logoUrl ? 'Custom logo active! Saved and published live across Header & Footer.' : 'No custom logo uploaded. Standard text title fallback active.'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* CEO / Founder Profile Photo Upload Section */}
+                <div className="bg-[#1C1A17] p-5 rounded-2xl border border-[#3D3833] space-y-4">
+                  <div className="flex justify-between items-center">
+                    <h4 className="font-serif font-bold text-sm text-[#D49E6A] uppercase flex items-center gap-2">
+                      <User className="w-4 h-4" /> Founder & CEO Profile Photo Management
+                    </h4>
+                    {profileForm.profilePhotoUrl && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updated = { ...profileForm, profilePhotoUrl: '' };
+                          setProfileForm(updated);
+                          saveStoredProfile(updated);
+                          onUpdateProfile(updated);
+                        }}
+                        className="text-[11px] font-bold text-rose-400 hover:text-rose-300 flex items-center gap-1 uppercase"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" /> Remove Photo
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                    {/* Upload Controls */}
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-[#9E958C] font-bold mb-1 uppercase text-[11px]">Upload CEO / Founder Image File</label>
+                        <label className="w-full bg-[#2B2723] hover:bg-[#3D3833] border border-[#3D3833] text-white font-bold p-3 rounded-xl uppercase cursor-pointer flex items-center justify-center gap-2 transition-colors">
+                          <Upload className="w-4 h-4 text-[#D49E6A]" /> Select Image From Local Device
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleFileUpload(e, 'profile')}
+                            className="hidden"
+                          />
+                        </label>
+                      </div>
+
+                      <div>
+                        <label className="block text-[#9E958C] font-bold mb-1 uppercase text-[11px]">Or Enter CEO Image Web URL</label>
+                        <input
+                          type="url"
+                          placeholder="https://..."
+                          value={profileForm.profilePhotoUrl || ''}
+                          onChange={(e) => {
+                            const updated = { ...profileForm, profilePhotoUrl: e.target.value };
+                            setProfileForm(updated);
+                            saveStoredProfile(updated);
+                            onUpdateProfile(updated);
+                          }}
+                          className="w-full bg-[#2B2723] border border-[#3D3833] rounded-xl p-3 text-white focus:outline-none focus:border-[#D49E6A]"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Live CEO Photo Preview Box */}
+                    <div className="bg-[#2B2723] p-4 rounded-xl border border-[#3D3833] text-center space-y-2">
+                      <span className="text-[10px] uppercase font-bold text-[#9E958C] block">CEO Photo Live Preview</span>
+                      <div className="bg-[#121110] p-3 rounded-xl border border-[#3D3833] flex items-center justify-center min-h-[90px]">
+                        {profileForm.profilePhotoUrl ? (
+                          <img
+                            src={profileForm.profilePhotoUrl}
+                            alt="CEO Photo Preview"
+                            className="w-20 h-20 object-cover rounded-full border-2 border-[#D49E6A]/50 shadow-md"
+                            onError={(e) => {
+                              (e.target as HTMLElement).style.display = 'none';
+                            }}
+                          />
+                        ) : (
+                          <div className="w-16 h-16 rounded-full bg-[#3D3833] flex items-center justify-center text-[#9E958C]">
+                            <User className="w-8 h-8" />
+                          </div>
+                        )}
+                      </div>
+                      <p className="text-[10px] text-[#9E958C]">
+                        CEO Photo is published live across the Hero Section badge, About Section founder card, and Contact Modal.
                       </p>
                     </div>
                   </div>

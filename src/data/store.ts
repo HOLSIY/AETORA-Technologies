@@ -1,8 +1,8 @@
 import { DeveloperProfile, WebsiteProject, Testimonial, SkillItem, MediaItem } from '../types';
 import { INITIAL_PROFILE, INITIAL_PROJECTS, INITIAL_TESTIMONIALS, INITIAL_SKILLS, INITIAL_MEDIA } from './initialData';
 
-const PROFILE_KEY = 'aetora_profile_v1';
-const PROJECTS_KEY = 'aetora_projects_v5';
+const PROFILE_KEY = 'aetora_profile_v2';
+const PROJECTS_KEY = 'aetora_projects_v6';
 const TESTIMONIALS_KEY = 'aetora_testimonials_v1';
 const SKILLS_KEY = 'aetora_skills_v1';
 const MEDIA_KEY = 'aetora_media_v1';
@@ -64,7 +64,7 @@ export function getStoredProjects(): WebsiteProject[] {
         return parsed.map((p: WebsiteProject) => {
           const initialMatch = INITIAL_PROJECTS.find(item => item.id === p.id);
           if (initialMatch) {
-            const isBroken = (url?: string) => !url || url.includes('oakwood_') || url.includes('assets/oakwood') || url.includes('blob:');
+            const isBroken = (url?: string) => !url || url.includes('oakwood_') || url.includes('assets/oakwood') || url.includes('blob:') || url.includes('photo-1523050854058-8df90110c9f1') || url.includes('/src/assets') || url.trim() === '';
             return {
               ...initialMatch,
               ...p,

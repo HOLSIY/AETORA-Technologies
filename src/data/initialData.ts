@@ -16,7 +16,7 @@ export const INITIAL_PROFILE: DeveloperProfile = {
   aboutVision: 'To lead the software industry in delivering pixel-perfect design, bulletproof security, and seamless full-stack web architecture.',
   aboutText: 'AETORA Technologies is a premier software development firm founded by Senaf Wondimmu. We specialize in end-to-end digital solutions—from custom restaurant portals and healthcare management systems to e-commerce engines, admin dashboards, and high-conversion web platforms.',
   yearsOfExperience: 8,
-  profilePhotoUrl: senafOwnerPhoto,
+  profilePhotoUrl: '/senaf_owner.jpg',
   email: 'senafwondimu@gmail.com',
   phone: '+251 97 493 8979',
   whatsapp: '+251 97 493 8979',
@@ -527,9 +527,9 @@ export const INITIAL_PROJECTS: WebsiteProject[] = [
     fullDescription: 'Modern educational platform with student admission form, event calendar, faculty directory, and parent portal link.',
     priceEstimate: '$1,100',
     status: 'Customizable',
-    previewImageUrl: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&q=80&w=1200',
+    previewImageUrl: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&q=80&w=1200',
     screenshotUrls: [
-      'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&q=80&w=1200',
+      'https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&q=80&w=1200',
       'https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&q=80&w=1200',
       'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=1200',
       'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&q=80&w=1200',
@@ -540,7 +540,7 @@ export const INITIAL_PROJECTS: WebsiteProject[] = [
     galleryScreenshots: [
       {
         id: 'oakwood-scr-1',
-        url: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&q=80&w=1200',
+        url: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&q=80&w=1200',
         title: 'Home Page',
         caption: 'Oakwood International School main landing page featuring inspirational hero banner and acceptance metrics.',
       },

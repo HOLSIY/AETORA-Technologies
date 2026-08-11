@@ -39,15 +39,12 @@ export const Hero3DBackground: React.FC<Hero3DBackgroundProps> = ({
           top: `${initialY}%`,
           width: `${size}px`,
           height: `${size}px`,
-          perspective: '1000px',
         }}
         animate={{
-          y: [0, -25, 15, 0],
-          x: [0, 15, -15, 0],
-          rotateX: [0, 180, 360],
-          rotateY: [0, 180, 360],
-          rotateZ: [0, 90, 0],
-          scale: [1, 1.08, 0.95, 1],
+          y: [0, -20, 10, 0],
+          x: [0, 10, -10, 0],
+          rotate: [0, 45, 90, 0],
+          scale: [1, 1.05, 0.95, 1],
         }}
         transition={{
           duration,
@@ -59,22 +56,22 @@ export const Hero3DBackground: React.FC<Hero3DBackgroundProps> = ({
         {objectType === 0 && (
           /* Floating Glass Sphere */
           <div
-            className={`w-full h-full rounded-full backdrop-blur-md shadow-xl border ${
+            className={`w-full h-full rounded-full shadow-lg border ${
               isLight
-                ? 'bg-gradient-to-tr from-[#D49E6A]/20 via-white/40 to-white/70 border-[#B87D4B]/30 shadow-[#B87D4B]/10'
-                : 'bg-gradient-to-tr from-[#D49E6A]/15 via-white/5 to-white/20 border-white/20 shadow-black/40'
+                ? 'bg-gradient-to-tr from-[#D49E6A]/20 via-white/50 to-white/80 border-[#B87D4B]/30'
+                : 'bg-gradient-to-tr from-[#D49E6A]/20 via-white/10 to-white/20 border-white/20'
             }`}
             style={{ opacity: 0.7 * glowStrength }}
           />
         )}
 
         {objectType === 1 && (
-          /* Floating 3D Cube / Prism Pane */
+          /* Floating Prism Pane */
           <div
-            className={`w-full h-full rounded-2xl backdrop-blur-lg transform rotate-45 border ${
+            className={`w-full h-full rounded-2xl transform rotate-45 border ${
               isLight
-                ? 'bg-gradient-to-br from-[#B87D4B]/20 via-[#E5C198]/30 to-white/60 border-[#B87D4B]/35 shadow-lg'
-                : 'bg-gradient-to-br from-[#D49E6A]/20 via-white/10 to-transparent border-white/25 shadow-2xl'
+                ? 'bg-gradient-to-br from-[#B87D4B]/20 via-[#E5C198]/30 to-white/70 border-[#B87D4B]/35 shadow-md'
+                : 'bg-gradient-to-br from-[#D49E6A]/25 via-white/10 to-transparent border-white/25 shadow-xl'
             }`}
             style={{ opacity: 0.65 * glowStrength }}
           />
@@ -85,8 +82,8 @@ export const Hero3DBackground: React.FC<Hero3DBackgroundProps> = ({
           <div
             className={`w-full h-full rounded-full border-2 ${
               isLight
-                ? 'border-[#B87D4B]/40 bg-[#D49E6A]/10 shadow-[0_0_20px_rgba(184,125,75,0.2)]'
-                : 'border-[#D49E6A]/50 bg-[#D49E6A]/5 shadow-[0_0_25px_rgba(212,158,106,0.25)]'
+                ? 'border-[#B87D4B]/40 bg-[#D49E6A]/10 shadow-[0_0_15px_rgba(184,125,75,0.15)]'
+                : 'border-[#D49E6A]/50 bg-[#D49E6A]/5 shadow-[0_0_20px_rgba(212,158,106,0.2)]'
             }`}
             style={{ opacity: 0.6 * glowStrength }}
           />
@@ -95,10 +92,10 @@ export const Hero3DBackground: React.FC<Hero3DBackgroundProps> = ({
         {objectType === 3 && (
           /* Digital Capsule Shape */
           <div
-            className={`w-full h-2/3 rounded-full backdrop-blur-sm border ${
+            className={`w-full h-2/3 rounded-full border ${
               isLight
-                ? 'bg-gradient-to-r from-white/80 to-[#E5C198]/40 border-[#B87D4B]/25'
-                : 'bg-gradient-to-r from-[#1C1A17]/80 to-[#D49E6A]/20 border-white/15'
+                ? 'bg-gradient-to-r from-white/90 to-[#E5C198]/50 border-[#B87D4B]/25'
+                : 'bg-gradient-to-r from-[#1C1A17]/90 to-[#D49E6A]/30 border-white/15'
             }`}
             style={{ opacity: 0.75 * glowStrength }}
           />

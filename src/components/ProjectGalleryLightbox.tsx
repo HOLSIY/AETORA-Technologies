@@ -153,7 +153,11 @@ export const ProjectGalleryLightbox: React.FC<ProjectGalleryLightboxProps> = ({
                 src={item.url}
                 alt={item.title}
                 onError={(e) => {
-                  (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&q=80&w=1200';
+                  const target = e.target as HTMLImageElement;
+                  if (!target.dataset.failed) {
+                    target.dataset.failed = 'true';
+                    target.src = 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&q=80&w=1200';
+                  }
                 }}
                 className="w-full h-full object-cover object-top block group-hover:scale-105 transition-transform duration-500"
                 loading="lazy"
@@ -252,7 +256,11 @@ export const ProjectGalleryLightbox: React.FC<ProjectGalleryLightboxProps> = ({
                     src={currentItem.url}
                     alt={currentItem.title}
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&q=80&w=1200';
+                      const target = e.target as HTMLImageElement;
+                      if (!target.dataset.failed) {
+                        target.dataset.failed = 'true';
+                        target.src = 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&q=80&w=1200';
+                      }
                     }}
                     className="max-h-[70vh] w-auto max-w-full object-contain rounded-2xl border-2 border-[#3D3833] shadow-2xl"
                   />

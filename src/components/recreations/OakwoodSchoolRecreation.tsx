@@ -6,7 +6,7 @@ import { GraduationCap, BookOpen, Users, Award, Calendar, CheckCircle, FileText,
 export const defaultOakwoodScreenshots: GalleryScreenshot[] = [
   {
     id: 'oakwood-scr-1',
-    url: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&q=80&w=1200',
+    url: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&q=80&w=1200',
     title: 'Home Page',
     caption: 'Oakwood International School main landing page featuring inspirational hero banner and acceptance metrics.',
   },
