@@ -61,9 +61,7 @@ export const MasterPortalModal: React.FC<MasterPortalProps> = ({
   onUpdateSkills,
 }) => {
   const [passcode, setPasscode] = useState('');
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    return localStorage.getItem('aetora_master_auth') === 'true';
-  });
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
   const {
     isVisualEditMode,
@@ -209,7 +207,6 @@ export const MasterPortalModal: React.FC<MasterPortalProps> = ({
     e.preventDefault();
     if (passcode === 'mastersenaf68' || passcode === 'senaf2026' || passcode === 'master123') {
       setIsAuthenticated(true);
-      localStorage.setItem('aetora_master_auth', 'true');
     } else {
       alert('Incorrect Passcode. Valid passcode: mastersenaf68');
     }
@@ -217,7 +214,7 @@ export const MasterPortalModal: React.FC<MasterPortalProps> = ({
 
   const handleLogout = () => {
     setIsAuthenticated(false);
-    localStorage.removeItem('aetora_master_auth');
+    setPasscode('');
   };
 
   // Image Upload Handler with Canvas Compression

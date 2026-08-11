@@ -35,6 +35,9 @@ export function AppContent() {
 
   // Subscribe to live CMS store changes across tabs/windows & sync from persistent cloud
   useEffect(() => {
+    // Ensure public website visitors never carry legacy master auth flags in localStorage
+    localStorage.removeItem('aetora_master_auth');
+
     const doSync = () => {
       syncCloudSiteSettings().then((updated) => {
         if (updated) {

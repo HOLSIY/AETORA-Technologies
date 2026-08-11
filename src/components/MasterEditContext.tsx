@@ -47,10 +47,8 @@ export const useMasterEdit = () => {
 };
 
 export const MasterEditProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isMasterPortalUnlocked, setIsMasterPortalUnlocked] = useState<boolean>(() => {
-    return localStorage.getItem('aetora_master_auth') === 'true';
-  });
-  const [isVisualEditMode, setIsVisualEditMode] = useState<boolean>(true);
+  const [isMasterPortalUnlocked, setIsMasterPortalUnlocked] = useState<boolean>(false);
+  const [isVisualEditMode, setIsVisualEditMode] = useState<boolean>(false);
   
   // Theme state defaulting to 'light' mode
   const [theme, setThemeState] = useState<'light' | 'dark'>(() => {
@@ -78,10 +76,6 @@ export const MasterEditProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [customUrlInput, setCustomUrlInput] = useState('');
   const [uploadPreview, setUploadPreview] = useState<string | null>(null);
   const [uploadName, setUploadName] = useState('');
-
-  useEffect(() => {
-    localStorage.setItem('aetora_master_auth', isMasterPortalUnlocked ? 'true' : 'false');
-  }, [isMasterPortalUnlocked]);
 
   const openImagePicker = (opts: ImagePickerOptions) => {
     setActiveImagePicker(opts);
@@ -184,32 +178,6 @@ export const MasterEditProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       }}
     >
       {children}
-
-      {/* Floating Toolbar when Master Portal is active */}
-      {isMasterPortalUnlocked && (
-        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 bg-[#1C1A17]/95 text-[#E8E4DF] border border-[#D49E6A]/50 px-5 py-2.5 rounded-full shadow-2xl backdrop-blur-md flex items-center gap-4 text-xs font-sans">
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span className="font-bold text-white tracking-wide uppercase">Master Portal Live Editor Active</span>
-          </div>
-
-          <div className="h-4 w-px bg-[#3D3833]"></div>
-
-          <label className="flex items-center gap-2 cursor-pointer font-bold text-[#D49E6A]">
-            <input
-              type="checkbox"
-              checked={isVisualEditMode}
-              onChange={(e) => setIsVisualEditMode(e.target.checked)}
-              className="accent-[#D49E6A] w-4 h-4 rounded cursor-pointer"
-            />
-            <span>Visual Direct Edit</span>
-          </label>
-
-          <span className="text-[10px] text-[#9E958C] hidden md:inline">
-            (Double-click text or image on page to edit)
-          </span>
-        </div>
-      )}
 
       {/* Image Picker / Media Manager Popup Dialog */}
       {activeImagePicker && (
